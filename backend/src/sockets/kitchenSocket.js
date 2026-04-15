@@ -28,7 +28,7 @@ const setupKitchenSocket = (io) => {
         console.log(`📋 Order #${orderID} → ${status}`);
       } catch (error) {
         console.error("Socket error:", error.message);
-        socket.emit("error", { message: "Cập nhật trạng thái thất bại" });
+        socket.emit("error", { message: "Failed to update order status" });
       }
     });
 
