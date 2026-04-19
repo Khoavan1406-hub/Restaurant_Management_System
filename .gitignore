@@ -64,3 +64,4 @@ backend/uploads/
 # ========================
 *.tmp
 *.temp
+.gitnexus
