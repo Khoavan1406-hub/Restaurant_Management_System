@@ -26,6 +26,9 @@ const App = () => {
         </Routes>
         <Toaster
           position="top-right"
+          containerStyle={{
+            zIndex: 999999,
+          }}
           toastOptions={{
             style: {
               background: '#1e2130',

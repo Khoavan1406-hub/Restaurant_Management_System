@@ -6,13 +6,13 @@
 -- 1. User Table
 CREATE TABLE IF NOT EXISTS `User` (
     `userID`        INT             AUTO_INCREMENT PRIMARY KEY,
-    `id_number`     VARCHAR(20)     NOT NULL UNIQUE,
+    `id_number`     VARCHAR(20)     NOT NULL UNIQUE, -- CCCD
     `username`      VARCHAR(50)     NOT NULL UNIQUE,
     `passwordHash`  VARCHAR(255)    NOT NULL,
     `phone_number`  VARCHAR(15)     NULL,
     `contact_email` VARCHAR(100)    NULL,
     `role`          ENUM('Admin', 'Chef', 'Waiter') NOT NULL,
-    `is_active`     BOOLEAN         DEFAULT TRUE,
+    `is_active`     BOOLEAN         DEFAULT FALSE,
     `created_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
     `updated_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

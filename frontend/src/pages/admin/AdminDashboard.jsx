@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { getAllUsers } from "../../api/userApi";
-import { FiUsers, FiUserCheck, FiUserX, FiShield } from "react-icons/fi";
+import { FiUsers } from "react-icons/fi";
+import { GrUserAdmin } from "react-icons/gr";
+import { BiDish } from "react-icons/bi";
+import { LuChefHat } from "react-icons/lu";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -19,8 +22,12 @@ const AdminDashboard = () => {
 
   const totalUsers = users.length;
   const activeUsers = users.filter((u) => u.is_active).length;
-  const chefs = users.filter((u) => u.role === "Chef").length;
-  const waiters = users.filter((u) => u.role === "Waiter").length;
+  const activeChefs = users.filter((u) => u.is_active && u.role === "Chef").length;
+  const totalChefs = users.filter((u) => u.role === "Chef").length;
+  const activeWaiters = users.filter((u) => u.role === "Waiter" && u.is_active).length;
+  const totalWaiters = users.filter((u) => u.role === "Waiter").length;
+  const activeAdmins = users.filter((u) => u.role === "Admin" && u.is_active).length;
+  const totalAdmins = users.filter((u) => u.role === "Admin").length;
 
   return (
     <div>
@@ -32,19 +39,19 @@ const AdminDashboard = () => {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-icon amber"><FiUsers /></div>
-          <div className="stat-info"><h3>{totalUsers}</h3><p>Total Staff</p></div>
+          <div className="stat-info"><h3>{activeUsers}/{totalUsers}</h3><p>Total Staff</p></div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon green"><FiUserCheck /></div>
-          <div className="stat-info"><h3>{activeUsers}</h3><p>Active</p></div>
+          <div className="stat-icon blue"><GrUserAdmin /></div>
+          <div className="stat-info"><h3>{activeAdmins}/{totalAdmins}</h3><p>Admins</p></div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon blue"><FiShield /></div>
-          <div className="stat-info"><h3>{chefs}</h3><p>Chefs</p></div>
+          <div className="stat-icon blue"><LuChefHat /></div>
+          <div className="stat-info"><h3>{activeChefs}/{totalChefs}</h3><p>Chefs</p></div>
         </div>
         <div className="stat-card">
-          <div className="stat-icon red"><FiUserX /></div>
-          <div className="stat-info"><h3>{waiters}</h3><p>Waiters</p></div>
+          <div className="stat-icon red"><BiDish /></div>
+          <div className="stat-info"><h3>{activeWaiters}/{totalWaiters}</h3><p>Waiters</p></div>
         </div>
       </div>
 

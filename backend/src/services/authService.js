@@ -8,14 +8,12 @@ const login = async (username, password) => {
     throw { status: 401, message: "Invalid username or password" };
   }
 
-  if (!user.is_active) {
-    throw { status: 403, message: "Account has been deactivated" };
-  }
-
   const isMatch = await bcrypt.compare(password, user.passwordHash);
   if (!isMatch) {
     throw { status: 401, message: "Invalid username or password" };
   }
+
+  await userModel.activate(user.userID);
 
   const token = jwt.sign(
     { userID: user.userID, role: user.role },
@@ -33,4 +31,9 @@ const login = async (username, password) => {
   };
 };
 
-module.exports = { login };
+const logout = async (userID) => {
+  await userModel.deactivate(userID);
+  return { message: "Logout successful" };
+};
+
+module.exports = { login, logout };

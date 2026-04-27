@@ -180,7 +180,7 @@ const MenuManagement = () => {
                 <div className="dish-card-footer">
                   <div>
                     <span className="dish-price">{formatPrice(d.price)}</span>
-                    <span className="dish-portion">{d.current_portion}/{d.daily_portion} left</span>
+                    <span className="dish-portion">{d.current_portion} left</span>
                   </div>
                   <div className="dish-actions">
                     <button className="btn btn-secondary btn-sm" onClick={() => openEdit(d)}><FiEdit2 /></button>

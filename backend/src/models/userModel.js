@@ -35,6 +35,22 @@ const create = async ({ id_number, username, passwordHash, phone_number, contact
   return result;
 };
 
+const activate = async (userID) => {
+  const [result] = await pool.execute(
+    "UPDATE `User` SET `is_active` = TRUE WHERE `userID` = ?",
+    [userID]
+  );
+  return result;
+};
+
+const deactivate = async (userID) => {
+  const [result] = await pool.execute(
+    "UPDATE `User` SET `is_active` = FALSE WHERE `userID` = ?",
+    [userID]
+  );
+  return result;
+};
+
 // Thêm vào bảng role tương ứng (Admin/Chef/Waiter)
 const insertRoleTable = async (userID, role) => {
   const table = role;
@@ -97,6 +113,8 @@ module.exports = {
   findByUsername,
   findById,
   findAll,
+  activate,
+  deactivate,
   create,
   insertRoleTable,
   deleteById,

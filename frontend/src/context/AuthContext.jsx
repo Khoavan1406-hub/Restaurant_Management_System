@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { logoutApi } from "../api/authApi";
 
 const AuthContext = createContext(null);
 
@@ -24,11 +25,19 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+  const logout = async () => {
+    try {
+      if (localStorage.getItem("token")) {
+        await logoutApi();
+      }
+    } catch (error) {
+      console.error("Logout API failed:", error);
+    } finally {
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
   };
 
   return (

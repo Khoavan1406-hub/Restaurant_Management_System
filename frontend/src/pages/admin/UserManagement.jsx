@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getAllUsers, createUser, deleteUser } from "../../api/userApi";
 import toast from "react-hot-toast";
 import { FiPlus, FiTrash2, FiSearch } from "react-icons/fi";
@@ -10,16 +10,19 @@ const UserManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ id_number: "", username: "", password: "", role: "Waiter" });
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const { data } = await getAllUsers();
       setUsers(data);
     } catch (err) {
-      toast.error("Failed to load staff list");
+      toast.error(`Failed to load staff list: ${err.message || "Unknown error"}`);
     }
-  };
+  }, []); // Empty array means this function never needs to be recreated
 
-  useEffect(() => { fetchUsers(); }, []);
+  // 2. Safely call it inside useEffect
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

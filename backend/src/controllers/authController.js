@@ -22,4 +22,15 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { login };
+const logout = async (req, res, next) => {
+  try {
+    await authService.logout(req.user.userID);
+    await auditLogModel.create(req.user.userID, "LOGOUT", `User ${req.user.username} logged out`);
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { login, logout };
