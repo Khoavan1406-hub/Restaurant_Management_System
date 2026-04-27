@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { FiHome, FiUsers, FiBookOpen, FiShoppingCart, FiMonitor, FiLogOut, FiMenu, FiX } from "react-icons/fi";
 import { useState } from "react";
+import ThemeSwitcher from "../components/themeSwitcher";
 import "./DashboardLayout.css";
 
 const navConfig = {
@@ -58,6 +59,9 @@ const DashboardLayout = ({ children }) => {
         </nav>
 
         <div className="sidebar-footer">
+          <div className="sidebar-theme">
+            <ThemeSwitcher />
+          </div>
           <div className="user-info">
             <div className="user-avatar">{user?.username?.[0]?.toUpperCase()}</div>
             <div className="user-detail">

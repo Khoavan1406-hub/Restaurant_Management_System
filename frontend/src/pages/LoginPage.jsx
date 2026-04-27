@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { loginApi } from "../api/authApi";
 import toast from "react-hot-toast";
 import { FiUser, FiLock, FiArrowRight } from "react-icons/fi";
+import ThemeSwitcher from "../components/themeSwitcher";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -41,6 +42,10 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+      <div className="login-theme-switcher">
+        <ThemeSwitcher compact />
+      </div>
+
       <div className="login-bg-decoration">
         <div className="bg-circle circle-1"></div>
         <div className="bg-circle circle-2"></div>

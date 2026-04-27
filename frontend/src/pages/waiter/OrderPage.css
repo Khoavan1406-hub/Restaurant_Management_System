@@ -70,7 +70,7 @@
   transition: all 0.2s;
 }
 .menu-item-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-strong);
 }
 .menu-item-card.unavailable {
   opacity: 0.45;

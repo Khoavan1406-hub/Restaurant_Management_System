@@ -31,11 +31,11 @@ const App = () => {
           }}
           toastOptions={{
             style: {
-              background: '#1e2130',
-              color: '#f1f5f9',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '12px',
-              fontSize: '0.875rem',
+              background: "var(--bg-card)",
+              color: "var(--text-primary)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "12px",
+              fontSize: "0.875rem",
             },
           }}
         />

@@ -91,6 +91,14 @@
   border-top: 1px solid var(--border-color);
 }
 
+.sidebar-theme {
+  margin-bottom: 12px;
+}
+
+.sidebar-theme .theme-switcher {
+  width: 100%;
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -193,7 +201,7 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--overlay);
     z-index: 90;
   }
   .main-content {
