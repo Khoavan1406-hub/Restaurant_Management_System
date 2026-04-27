@@ -1,6 +1,6 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { FiHome, FiUsers, FiBookOpen, FiShoppingCart, FiMonitor, FiLogOut, FiMenu, FiX } from "react-icons/fi";
+import { FiHome, FiUsers, FiBookOpen, FiShoppingCart, FiMonitor, FiLogOut, FiMenu, FiX, FiClipboard } from "react-icons/fi";
 import { useState } from "react";
 import ThemeSwitcher from "../components/themeSwitcher";
 import "./DashboardLayout.css";
@@ -16,14 +16,30 @@ const navConfig = {
   ],
   Waiter: [
     { path: "/waiter", label: "Tables", icon: <FiShoppingCart /> },
+    { path: "/waiter/orders", label: "Order", icon: <FiClipboard /> },
   ],
 };
 
 const DashboardLayout = ({ children }) => {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const links = navConfig[user?.role] || [];
+
+  const isLinkActive = (linkPath, navLinkIsActive) => {
+    if (user?.role !== "Waiter") return navLinkIsActive;
+
+    if (linkPath === "/waiter") {
+      return location.pathname === "/waiter" || location.pathname.startsWith("/waiter/table/");
+    }
+
+    if (linkPath === "/waiter/orders") {
+      return location.pathname === "/waiter/orders" || location.pathname.startsWith("/waiter/orders/");
+    }
+
+    return navLinkIsActive;
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -48,8 +64,8 @@ const DashboardLayout = ({ children }) => {
             <NavLink
               key={link.path}
               to={link.path}
-              end
-              className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+              end={link.end ?? true}
+              className={({ isActive }) => `nav-link ${isLinkActive(link.path, isActive) ? "active" : ""}`}
               onClick={() => setSidebarOpen(false)}
             >
               <span className="nav-icon">{link.icon}</span>

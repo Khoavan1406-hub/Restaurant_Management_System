@@ -5,6 +5,7 @@ import MenuManagement from "../pages/chef/MenuManagement";
 import KitchenDisplay from "../pages/chef/KitchenDisplay";
 import WaiterDashboard from "../pages/waiter/WaiterDashboard";
 import OrderPage from "../pages/waiter/OrderPage";
+import WaiterOrders from "../pages/waiter/WaiterOrders";
 import Unauthorized from "../pages/Unauthorized";
 import ProtectedRoute from "../components/ProtectedRoute";
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -62,10 +63,18 @@ const routes = [
     ),
   },
   {
-    path: "/waiter/order/:tableNumber",
+    path: "/waiter/table/:tableNumber",
     element: (
       <ProtectedRoute allowedRoles={["Waiter"]}>
         <DashboardLayout><OrderPage /></DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/waiter/orders",
+    element: (
+      <ProtectedRoute allowedRoles={["Waiter"]}>
+        <DashboardLayout><WaiterOrders /></DashboardLayout>
       </ProtectedRoute>
     ),
   },

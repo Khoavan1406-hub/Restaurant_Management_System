@@ -12,5 +12,7 @@ router.patch("/sessions/:id/close", verifyToken, authorizeRoles("Waiter"), order
 router.post("/", verifyToken, authorizeRoles("Waiter"), orderController.createOrder);
 router.get("/session/:sessionID", verifyToken, orderController.getBySession);
 router.get("/pending", verifyToken, authorizeRoles("Chef", "Admin"), orderController.getPending);
+router.get("/waiter/ready", verifyToken, authorizeRoles("Waiter"), orderController.getWaiterReadyOrders);
+router.patch("/:id/waiter-status", verifyToken, authorizeRoles("Waiter"), orderController.updateWaiterOrderStatus);
 
 module.exports = router;

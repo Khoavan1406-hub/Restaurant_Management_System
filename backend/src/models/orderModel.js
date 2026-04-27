@@ -60,10 +60,39 @@ const findPendingOrders = async () => {
   return rows;
 };
 
+// Lấy các đơn Ready của waiter hiện tại
+const findReadyOrdersByWaiter = async (waiterID) => {
+  const [rows] = await pool.execute(
+    `SELECT o.orderID, o.sessionID, o.timestamp, o.status,
+            ts.table_number,
+            oi.itemID, oi.quantity, oi.special_note,
+            d.name AS dish_name
+     FROM \`Order\` o
+     JOIN \`TableSession\` ts ON o.sessionID = ts.sessionID
+     JOIN \`OrderItem\` oi ON o.orderID = oi.orderID
+     JOIN \`Dish\` d ON oi.dishID = d.dishID
+     WHERE o.waiterID = ? AND o.status = 'Ready'
+     ORDER BY o.timestamp ASC`,
+    [waiterID]
+  );
+  return rows;
+};
+
+// Waiter cập nhật trạng thái đơn từ Ready -> Completed/Cancelled
+const updateOrderStatusForWaiter = async (orderID, waiterID, status) => {
+  const [result] = await pool.execute(
+    "UPDATE `Order` SET `status` = ? WHERE `orderID` = ? AND `waiterID` = ? AND `status` = 'Ready'",
+    [status, orderID, waiterID]
+  );
+  return result;
+};
+
 module.exports = {
   createOrder,
   addOrderItem,
   findOrdersBySession,
   updateOrderStatus,
   findPendingOrders,
+  findReadyOrdersByWaiter,
+  updateOrderStatusForWaiter,
 };

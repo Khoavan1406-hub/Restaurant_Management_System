@@ -62,6 +62,44 @@ const getPending = async (req, res, next) => {
   }
 };
 
+// GET /api/orders/waiter/ready
+const getWaiterReadyOrders = async (req, res, next) => {
+  try {
+    const orders = await orderService.getReadyOrdersByWaiter(req.user.userID);
+    res.json(orders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /api/orders/:id/waiter-status
+const updateWaiterOrderStatus = async (req, res, next) => {
+  try {
+    const orderID = parseInt(req.params.id);
+    const { status } = req.body;
+
+    if (!Number.isInteger(orderID) || orderID <= 0) {
+      return res.status(400).json({ message: "Valid order ID is required" });
+    }
+
+    if (!["Completed", "Cancelled"].includes(status)) {
+      return res.status(400).json({ message: "Status must be Completed or Cancelled" });
+    }
+
+    const result = await orderService.updateReadyOrderStatusByWaiter(req.user.userID, orderID, status);
+    await auditLogModel.create(req.user.userID, "WAITER_UPDATE_ORDER_STATUS", `Order #${orderID} -> ${status}`);
+
+    const io = req.app.get("io");
+    if (io) {
+      io.emit("order-status-update", { orderID, status });
+    }
+
+    res.json({ message: `Order #${orderID} updated`, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // PATCH /api/orders/sessions/:id/close
 const closeSession = async (req, res, next) => {
   try {
@@ -85,4 +123,13 @@ const getActiveSessions = async (req, res, next) => {
   }
 };
 
-module.exports = { openSession, createOrder, getBySession, getPending, closeSession, getActiveSessions };
+module.exports = {
+  openSession,
+  createOrder,
+  getBySession,
+  getPending,
+  getWaiterReadyOrders,
+  updateWaiterOrderStatus,
+  closeSession,
+  getActiveSessions,
+};

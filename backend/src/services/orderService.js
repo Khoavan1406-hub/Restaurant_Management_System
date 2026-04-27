@@ -53,6 +53,24 @@ const getPendingOrders = async () => {
   return await orderModel.findPendingOrders();
 };
 
+const getReadyOrdersByWaiter = async (waiterID) => {
+  return await orderModel.findReadyOrdersByWaiter(waiterID);
+};
+
+const updateReadyOrderStatusByWaiter = async (waiterID, orderID, status) => {
+  const allowedStatuses = ["Completed", "Cancelled"];
+  if (!allowedStatuses.includes(status)) {
+    throw { status: 400, message: "Invalid status for waiter action" };
+  }
+
+  const result = await orderModel.updateOrderStatusForWaiter(orderID, waiterID, status);
+  if (result.affectedRows === 0) {
+    throw { status: 404, message: "Order not found, not ready, or not assigned to this waiter" };
+  }
+
+  return { orderID, status };
+};
+
 const closeSession = async (sessionID) => {
   const orders = await orderModel.findOrdersBySession(sessionID);
   let totalBill = 0;
@@ -67,4 +85,13 @@ const getActiveSessions = async () => {
   return await sessionModel.findAllActive();
 };
 
-module.exports = { openSession, createOrder, getOrdersBySession, getPendingOrders, closeSession, getActiveSessions };
+module.exports = {
+  openSession,
+  createOrder,
+  getOrdersBySession,
+  getPendingOrders,
+  getReadyOrdersByWaiter,
+  updateReadyOrderStatusByWaiter,
+  closeSession,
+  getActiveSessions,
+};

@@ -31,14 +31,14 @@ const WaiterDashboard = () => {
   const handleTableClick = async (tableNumber) => {
     if (activeTables[tableNumber]) {
       // Table already has active session — go to order page
-      navigate(`/waiter/order/${tableNumber}?sessionID=${activeTables[tableNumber]}`);
+      navigate(`/waiter/table/${tableNumber}?sessionID=${activeTables[tableNumber]}`);
     } else {
       // Open new session
       try {
         const { data } = await openSession(tableNumber);
         toast.success(`Table ${tableNumber} is now open`);
         setActiveTables({ ...activeTables, [tableNumber]: data.sessionID });
-        navigate(`/waiter/order/${tableNumber}?sessionID=${data.sessionID}`);
+        navigate(`/waiter/table/${tableNumber}?sessionID=${data.sessionID}`);
       } catch (err) {
         toast.error(err.response?.data?.message || "Failed to open table");
       }
