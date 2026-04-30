@@ -55,7 +55,7 @@ const LoginPage = () => {
       <div className="login-card">
         <div className="login-header">
           <div className="login-logo">🍽️</div>
-          <h1>Restaurant Manager</h1>
+          <h1>Restaurant Management System</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="login-form">

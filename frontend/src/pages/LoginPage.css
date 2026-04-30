@@ -63,7 +63,7 @@
 
 .login-card {
   position: relative;
-  width: 400px;
+  width: 600px;
   background: var(--bg-glass);
   backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
@@ -87,6 +87,7 @@
   font-size: 1.5rem;
   font-weight: 700;
   background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 4px;

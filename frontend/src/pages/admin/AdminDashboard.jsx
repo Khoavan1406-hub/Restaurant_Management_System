@@ -194,7 +194,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.slice(0, 5).map((u) => (
+                {[...users].sort((a, b) => b.is_active - a.is_active).slice(0, 5).map((u) => (
                   <tr key={u.userID}>
                     <td style={{ color: "var(--text-primary)", fontWeight: 600 }}>{u.username}</td>
                     <td>{u.id_number}</td>

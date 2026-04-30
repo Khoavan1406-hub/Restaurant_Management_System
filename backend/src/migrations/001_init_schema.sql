@@ -6,15 +6,14 @@
 -- 1. User Table
 CREATE TABLE IF NOT EXISTS `User` (
     `userID`        INT             AUTO_INCREMENT PRIMARY KEY,
-    `id_number`     VARCHAR(20)     NOT NULL UNIQUE, -- CCCD
+    `id_number`     VARCHAR(20)     NOT NULL UNIQUE,
     `username`      VARCHAR(50)     NOT NULL UNIQUE,
     `passwordHash`  VARCHAR(255)    NOT NULL,
     `phone_number`  VARCHAR(15)     NULL,
     `contact_email` VARCHAR(100)    NULL,
     `role`          ENUM('Admin', 'Chef', 'Waiter') NOT NULL,
     `is_active`     BOOLEAN         DEFAULT FALSE,
-    `created_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    `created_at`    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 2. Admin Table (Inherit from User)
@@ -47,14 +46,13 @@ CREATE TABLE IF NOT EXISTS `Dish` (
     `chefID`          INT             NULL,
     `name`            VARCHAR(100)    NOT NULL,
     `description`     TEXT            NULL,
+    `note`            TEXT            NULL,
     `image_url`       VARCHAR(500)    NULL,
     `category`        VARCHAR(50)     NOT NULL,
     `price`           DECIMAL(12, 2)  NOT NULL CHECK (`price` >= 0),
     `daily_portion`   INT             NOT NULL DEFAULT 0,
     `current_portion` INT             NOT NULL DEFAULT 0,
     `is_available`    BOOLEAN         DEFAULT TRUE,
-    `created_at`      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
-    `updated_at`      TIMESTAMP       DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT `fk_dish_chef`
         FOREIGN KEY (`chefID`) REFERENCES `Chef`(`userID`)
         ON DELETE SET NULL ON UPDATE CASCADE
@@ -112,8 +110,7 @@ CREATE TABLE IF NOT EXISTS `OrderItem` (
 CREATE TABLE IF NOT EXISTS `AuditLog` (
     `logID`     INT          AUTO_INCREMENT PRIMARY KEY,
     `userID`    INT          NULL,
-    `action`    VARCHAR(255) NOT NULL,
-    `detail`    TEXT         NULL,
+    `action`    TEXT         NOT NULL,
     `timestamp` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `fk_log_user`
         FOREIGN KEY (`userID`) REFERENCES `User`(`userID`)

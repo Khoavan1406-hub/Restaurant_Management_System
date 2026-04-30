@@ -71,7 +71,6 @@ docker compose up db -d
 ### 2. Backend Setup
 ```bash
 cd backend
-cp .env.example .env
 npm install
 npm run dev
 ```
@@ -90,6 +89,10 @@ Navigate to `http://localhost:5173`
 | Username | Password | Role |
 |----------|----------|------|
 | admin | admin123 | Admin |
+| waiter1 | waiter1123 | Waiter |
+| waiter2 | waiter2123 | Waiter |
+| chef1 | chef1123 | Chef |
+| chef2 | chef2123 | Chef |
 
 > Create Chef and Waiter accounts from the Admin dashboard.
 

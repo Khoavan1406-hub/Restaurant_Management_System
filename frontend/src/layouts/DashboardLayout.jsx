@@ -7,7 +7,7 @@ import "./DashboardLayout.css";
 
 const navConfig = {
   Admin: [
-    { path: "/admin", label: "Dashboard", icon: <FiHome /> },
+    { path: "/admin", label: "Admin Dashboard", icon: <FiHome /> },
     { path: "/admin/users", label: "Staff Management", icon: <FiUsers /> },
   ],
   Chef: [
@@ -15,8 +15,8 @@ const navConfig = {
     { path: "/chef/kitchen", label: "Kitchen Display", icon: <FiMonitor /> },
   ],
   Waiter: [
-    { path: "/waiter", label: "Tables", icon: <FiShoppingCart /> },
-    { path: "/waiter/orders", label: "Order", icon: <FiClipboard /> },
+    { path: "/waiter", label: "Table Session", icon: <FiShoppingCart /> },
+    { path: "/waiter/orders", label: "Order Management", icon: <FiClipboard /> },
   ],
 };
 
@@ -55,8 +55,7 @@ const DashboardLayout = ({ children }) => {
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
           <div className="sidebar-logo">🍽️</div>
-          <h2>RMS</h2>
-          <span className="sidebar-subtitle">Restaurant Manager</span>
+          <span className="sidebar-subtitle">Restaurant Management System</span>
         </div>
 
         <nav className="sidebar-nav">

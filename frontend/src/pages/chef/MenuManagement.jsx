@@ -4,14 +4,14 @@ import toast from "react-hot-toast";
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiBookOpen, FiUpload, FiX } from "react-icons/fi";
 import Modal from "../../components/Modal";
 
-const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop";
+const PLACEHOLDER_IMG = "https://www.iconarchive.com/download/i136446/microsoft/fluentui-emoji-3d/Fork-And-Knife-With-Plate-3d.1024.png";
 
 const MenuManagement = () => {
   const [dishes, setDishes] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [editingDish, setEditingDish] = useState(null);
-  const [form, setForm] = useState({ name: "", description: "", category: "", price: "", daily_portion: "" });
+  const [form, setForm] = useState({ name: "", description: "", note: "", category: "", price: "", daily_portion: "" });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
@@ -29,7 +29,7 @@ const MenuManagement = () => {
 
   const openCreate = () => {
     setEditingDish(null);
-    setForm({ name: "", description: "", category: "", price: "", daily_portion: "" });
+    setForm({ name: "", description: "", note: "", category: "", price: "", daily_portion: "" });
     setImageFile(null);
     setImagePreview(null);
     setShowModal(true);
@@ -40,6 +40,7 @@ const MenuManagement = () => {
     setForm({
       name: dish.name,
       description: dish.description || "",
+      note: dish.note || "",
       category: dish.category,
       price: dish.price,
       daily_portion: dish.daily_portion,
@@ -69,6 +70,7 @@ const MenuManagement = () => {
       const fd = new FormData();
       fd.append("name", form.name);
       fd.append("description", form.description);
+      fd.append("note", form.note);
       fd.append("category", form.category);
       fd.append("price", form.price);
       fd.append("daily_portion", form.daily_portion);
@@ -177,6 +179,7 @@ const MenuManagement = () => {
                   <span className="badge badge-info">{d.category}</span>
                 </div>
                 {d.description && <p className="dish-desc">{d.description}</p>}
+                {d.note && <p className="dish-desc">{d.note}</p>}
                 <div className="dish-card-footer">
                   <div>
                     <span className="dish-price">{formatPrice(d.price)}</span>
@@ -211,6 +214,10 @@ const MenuManagement = () => {
             <div className="input-group">
               <label>Description</label>
               <textarea rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="input-group">
+              <label>Note</label>
+              <textarea rows={2} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} />
             </div>
 
             {/* Image Upload */}

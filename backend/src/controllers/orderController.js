@@ -1,5 +1,6 @@
 const orderService = require("../services/orderService");
 const auditLogModel = require("../models/auditLogModel");
+const sessionModel = require("../models/sessionModel");
 
 // POST /api/orders/sessions
 const openSession = async (req, res, next) => {
@@ -45,6 +46,15 @@ const createOrder = async (req, res, next) => {
 const getBySession = async (req, res, next) => {
   try {
     const sessionID = parseInt(req.params.sessionID);
+    const session = await sessionModel.findById(sessionID);
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+    if (session.waiterID !== req.user.userID) {
+      return res.status(403).json({ message: "Access denied: this session belongs to another waiter" });
+    }
+
     const orders = await orderService.getOrdersBySession(sessionID);
     res.json(orders);
   } catch (error) {
@@ -104,6 +114,15 @@ const updateWaiterOrderStatus = async (req, res, next) => {
 const closeSession = async (req, res, next) => {
   try {
     const sessionID = parseInt(req.params.id);
+    const session = await sessionModel.findById(sessionID);
+
+    if (!session) {
+      return res.status(404).json({ message: "Session not found" });
+    }
+    if (session.waiterID !== req.user.userID) {
+      return res.status(403).json({ message: "Access denied: this session belongs to another waiter" });
+    }
+
     const result = await orderService.closeSession(sessionID);
     await auditLogModel.create(req.user.userID, "CLOSE_SESSION", `Closed session #${sessionID}, bill: ${result.totalBill}`);
 

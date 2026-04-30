@@ -1,10 +1,10 @@
 const { pool } = require("../config/db");
 
 // Ghi log thao tác hệ thống
-const create = async (userID, action, detail = null) => {
+const create = async (userID, action) => {
   const [result] = await pool.execute(
-    "INSERT INTO `AuditLog` (`userID`, `action`, `detail`) VALUES (?, ?, ?)",
-    [userID, action, detail]
+    "INSERT INTO `AuditLog` (`userID`, `action`) VALUES (?, ?)",
+    [userID, action]
   );
   return result;
 };

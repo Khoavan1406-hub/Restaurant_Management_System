@@ -7,6 +7,7 @@ import "./WaiterOrders.css";
 
 const formatDateTime = (timestamp) => {
   return new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
     dateStyle: "short",
     timeStyle: "short",
   }).format(new Date(timestamp));
@@ -93,8 +94,8 @@ const WaiterOrders = () => {
   return (
     <div>
       <div className="page-header">
-        <h1>Order</h1>
-        <p>Ready orders assigned to you</p>
+        <h1>Order Management</h1>
+        <p>View and manage orders</p>
       </div>
 
       {loading ? (

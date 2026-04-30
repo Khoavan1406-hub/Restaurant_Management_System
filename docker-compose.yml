@@ -16,35 +16,12 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./backend/src/migrations:/docker-entrypoint-initdb.d
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-time-zone='+07:00'
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # ===== Backend API Server =====
-  api:
-    build: ./backend
-    container_name: rms_backend
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    environment:
-      NODE_ENV: development
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_USER: ${MYSQL_USER:-rms_user}
-      DB_PASSWORD: ${MYSQL_PASSWORD:-rms_password}
-      DB_NAME: ${MYSQL_DATABASE:-restaurant_db}
-      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_change_me}
-      PORT: 5000
-    depends_on:
-      db:
-        condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
 
 volumes:
   mysql_data:

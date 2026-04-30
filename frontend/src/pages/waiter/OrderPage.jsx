@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { FiPlus, FiMinus, FiShoppingCart, FiArrowLeft, FiCreditCard, FiCheckCircle } from "react-icons/fi";
 import "./OrderPage.css";
 
-const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&h=100&fit=crop";
+const PLACEHOLDER_IMG = "https://www.iconarchive.com/download/i136446/microsoft/fluentui-emoji-3d/Fork-And-Knife-With-Plate-3d.1024.png";
 
 const OrderPage = () => {
   const { tableNumber } = useParams();

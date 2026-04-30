@@ -22,18 +22,18 @@ const findById = async (dishID) => {
   return rows[0];
 };
 
-const create = async ({ chefID, name, description, image_url, category, price, daily_portion }) => {
+const create = async ({ chefID, name, description, note, image_url, category, price, daily_portion }) => {
   const [result] = await pool.execute(
-    "INSERT INTO `Dish` (`chefID`, `name`, `description`, `image_url`, `category`, `price`, `daily_portion`, `current_portion`, `is_available`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, TRUE)",
-    [chefID, name, description || null, image_url || null, category, price, daily_portion, daily_portion]
+    "INSERT INTO `Dish` (`chefID`, `name`, `description`, `note`, `image_url`, `category`, `price`, `daily_portion`, `current_portion`, `is_available`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, TRUE)",
+    [chefID, name, description || null, note || null, image_url || null, category, price, daily_portion, daily_portion]
   );
   return result;
 };
 
-const update = async (dishID, { name, description, image_url, category, price, daily_portion }) => {
+const update = async (dishID, { name, description, note, image_url, category, price, daily_portion }) => {
   const [result] = await pool.execute(
-    "UPDATE `Dish` SET `name` = ?, `description` = ?, `image_url` = ?, `category` = ?, `price` = ?, `daily_portion` = ?, `current_portion` = ?, `is_available` = ? WHERE `dishID` = ?",
-    [name, description || null, image_url || null, category, price, daily_portion, daily_portion, daily_portion > 0, dishID]
+    "UPDATE `Dish` SET `name` = ?, `description` = ?, `note` = ?, `image_url` = ?, `category` = ?, `price` = ?, `daily_portion` = ?, `current_portion` = ?, `is_available` = ? WHERE `dishID` = ?",
+    [name, description || null, note || null, image_url || null, category, price, daily_portion, daily_portion, daily_portion > 0, dishID]
   );
   return result;
 };

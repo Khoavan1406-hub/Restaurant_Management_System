@@ -70,20 +70,13 @@ const KitchenDisplay = () => {
     }
   };
 
-  const timeAgo = (timestamp) => {
-    const diff = Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000);
-    if (diff < 1) return "Just now";
-    if (diff < 60) return `${diff}m ago`;
-    return `${Math.floor(diff / 60)}h ${diff % 60}m ago`;
-  };
-
   const notStarted = orders.filter((o) => o.status === "Not Started");
   const cooking = orders.filter((o) => o.status === "Cooking");
 
   return (
     <div>
       <div className="page-header">
-        <h1>🔥 Kitchen Display</h1>
+        <h1>Kitchen Display</h1>
         <p>Real-time orders from waiters</p>
       </div>
 
@@ -107,10 +100,9 @@ const KitchenDisplay = () => {
             <div key={order.orderID} className="kitchen-card new-order">
               <div className="kitchen-card-header">
                 <div>
-                  <span className="kitchen-order-id">#{order.orderID}</span>
+                  <span className="kitchen-order-id">Order #{order.orderID}</span>
                   <span className="badge badge-danger">Table {order.table_number}</span>
                 </div>
-                <span className="kitchen-time">{timeAgo(order.timestamp)}</span>
               </div>
               <div className="kitchen-items">
                 {order.items.map((item, i) => (
@@ -141,7 +133,6 @@ const KitchenDisplay = () => {
                   <span className="kitchen-order-id">#{order.orderID}</span>
                   <span className="badge badge-warning">Table {order.table_number}</span>
                 </div>
-                <span className="kitchen-time">{timeAgo(order.timestamp)}</span>
               </div>
               <div className="kitchen-items">
                 {order.items.map((item, i) => (

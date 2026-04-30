@@ -1,13 +1,10 @@
 ### Need to fix and implement
-1. [Admin] Create users
-- The id when created must be check / modified to be formated correctly before checking / creating.
+1. [Waiter] Display a final bill containing all order items. All items are summoned and calculated including price, quantity, and total. Total Bill (at the bottom of the table) should be sum of all order items.
 
-2. Rendering error (toast) - fixed: cho zindex = 99999
-- Toast phải render ở trên mọi thứ, ví dụ như khi tạo user báo lỗi trùng lập, toast render ở dưới pops-up nên user không thấy được error.
+2. [Waiter] The order management page should display all orders for the session (pending, cooking, ready, completed), not just ready orders.
 
-3. Status - fixed: set default is_active khi create user la false
-- Chưa login vẫn active
+3. [Waiter] The order can be cancelled or modified if the order status is still pending -> need synchronize.
 
-4. [Waiter] Waiter cannot change order to served
+4. [Admin] The staff adding modal need to require full of information.
 
-5. [Waiter] Path when click to a table should be table not order
+5. more image_url for seeded dishes
