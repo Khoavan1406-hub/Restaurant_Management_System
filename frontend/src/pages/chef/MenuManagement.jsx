@@ -345,7 +345,25 @@ const MenuManagement = () => {
                 rows={10}
                 value={copyInput}
                 onChange={(e) => setCopyInput(e.target.value)}
-                placeholder='[{"name":"Pho","category":"Main Course","price":45000,"daily_portion":20}, {"name":"Spring Rolls","category":"Appetizer","price":25000,"daily_portion":30}]'
+                placeholder={`e.g.
+[
+  {
+    "name": "Pho",
+    "description": "Traditional beef noodle soup",
+    "note": "Serve hot",
+    "category": "Main Course",
+    "price": 45000,
+    "daily_portion": 20
+  },
+  {
+    "name": "Spring Rolls",
+    "description": "Crispy rolls with pork",
+    "note": "Best with sweet chili sauce",
+    "category": "Appetizer",
+    "price": 25000,
+    "daily_portion": 30
+  }
+]`}
               />
             </div>
             <div className="modal-actions">

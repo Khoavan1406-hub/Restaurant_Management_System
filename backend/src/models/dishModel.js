@@ -40,11 +40,30 @@ const update = async (dishID, { name, description, note, image_url, category, pr
 };
 
 const decreasePortion = async (dishID, quantity) => {
-  const [result] = await pool.execute(
-    "UPDATE `Dish` SET `current_portion` = `current_portion` - ?, `is_available` = CASE WHEN (`current_portion` - ?) <= 0 THEN FALSE ELSE TRUE END WHERE `dishID` = ? AND `current_portion` >= ?",
-    [quantity, quantity, dishID, quantity]
-  );
-  return result;
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [result] = await conn.execute(
+      "UPDATE `Dish` SET `current_portion` = `current_portion` - ? WHERE `dishID` = ? AND `current_portion` >= ?",
+      [quantity, dishID, quantity]
+    );
+
+    if (result.affectedRows > 0) {
+      await conn.execute(
+        "UPDATE `Dish` SET `is_available` = CASE WHEN `current_portion` > 0 THEN TRUE ELSE FALSE END WHERE `dishID` = ?",
+        [dishID]
+      );
+    }
+
+    await conn.commit();
+    return result;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 };
 
 const deleteDish = async (dishID) => {
