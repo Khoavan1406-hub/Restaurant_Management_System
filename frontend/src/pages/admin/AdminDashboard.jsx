@@ -6,6 +6,14 @@ import { GrUserAdmin } from "react-icons/gr";
 import { BiDish } from "react-icons/bi";
 import { LuChefHat } from "react-icons/lu";
 
+const formatDateTime = (timestamp) => {
+  return new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(timestamp));
+};
+
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [period, setPeriod] = useState("today");
@@ -198,9 +206,9 @@ const AdminDashboard = () => {
                   <tr key={u.userID}>
                     <td style={{ color: "var(--text-primary)", fontWeight: 600 }}>{u.username}</td>
                     <td>{u.id_number}</td>
-                    <td><span className={`badge ${u.role === "Chef" ? "badge-info" : u.role === "Waiter" ? "badge-warning" : "badge-success"}`}>{u.role}</span></td>
+                    <td><span className={`badge ${u.role === "Chef" ? "badge-info" : u.role === "Waiter" ? "badge-warning" : "badge-pending"}`}>{u.role}</span></td>
                     <td><span className={`badge ${u.is_active ? "badge-success" : "badge-danger"}`}>{u.is_active ? "Active" : "Inactive"}</span></td>
-                    <td>{new Date(u.created_at).toLocaleDateString("en-US")}</td>
+                    <td>{formatDateTime(u.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

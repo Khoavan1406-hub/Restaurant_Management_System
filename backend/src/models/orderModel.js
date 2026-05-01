@@ -46,7 +46,7 @@ const updateOrderStatus = async (orderID, status, chefID = null) => {
 // Lấy đơn chờ xử lý (Kitchen Display)
 const findPendingOrders = async () => {
   const [rows] = await pool.execute(
-    `SELECT o.orderID, o.sessionID, o.timestamp, o.status,
+    `SELECT o.orderID, o.sessionID, o.timestamp, o.status, o.chefID,
             ts.table_number,
             oi.itemID, oi.quantity, oi.special_note,
             d.name AS dish_name
@@ -60,8 +60,8 @@ const findPendingOrders = async () => {
   return rows;
 };
 
-// Lấy các đơn Ready của waiter hiện tại
-const findReadyOrdersByWaiter = async (waiterID) => {
+// Lay tat ca don hang cua waiter (tat ca trang thai) trong cac session dang active
+const findOrdersByWaiter = async (waiterID) => {
   const [rows] = await pool.execute(
     `SELECT o.orderID, o.sessionID, o.timestamp, o.status,
             ts.table_number,
@@ -71,20 +71,47 @@ const findReadyOrdersByWaiter = async (waiterID) => {
      JOIN \`TableSession\` ts ON o.sessionID = ts.sessionID
      JOIN \`OrderItem\` oi ON o.orderID = oi.orderID
      JOIN \`Dish\` d ON oi.dishID = d.dishID
-     WHERE o.waiterID = ? AND o.status = 'Ready'
-     ORDER BY o.timestamp ASC`,
+     WHERE o.waiterID = ? AND ts.status = 'Active'
+     ORDER BY o.timestamp DESC, o.orderID DESC, oi.itemID ASC`,
     [waiterID]
   );
   return rows;
 };
 
-// Waiter cập nhật trạng thái đơn từ Ready -> Completed/Cancelled
-const updateOrderStatusForWaiter = async (orderID, waiterID, status) => {
-  const [result] = await pool.execute(
-    "UPDATE `Order` SET `status` = ? WHERE `orderID` = ? AND `waiterID` = ? AND `status` = 'Ready'",
-    [status, orderID, waiterID]
-  );
-  return result;
+// Waiter cập nhật trạng thái đơn theo điều kiện trạng thái hiện tại
+const updateOrderStatusForWaiter = async (orderID, waiterID, status, currentStatus) => {
+  if (status !== "Cancelled") {
+    const [result] = await pool.execute(
+      "UPDATE `Order` SET `status` = ? WHERE `orderID` = ? AND `waiterID` = ? AND `status` = ?",
+      [status, orderID, waiterID, currentStatus]
+    );
+    return result;
+  }
+
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    const [result] = await conn.execute(
+      "UPDATE `Order` SET `status` = ? WHERE `orderID` = ? AND `waiterID` = ? AND `status` = ?",
+      [status, orderID, waiterID, currentStatus]
+    );
+
+    if (result.affectedRows > 0) {
+      await conn.execute(
+        "UPDATE `Dish` d JOIN (SELECT `dishID`, SUM(`quantity`) AS `qty` FROM `OrderItem` WHERE `orderID` = ? GROUP BY `dishID`) oi ON d.dishID = oi.dishID SET d.current_portion = LEAST(d.current_portion + oi.qty, d.daily_portion), d.is_available = CASE WHEN LEAST(d.current_portion + oi.qty, d.daily_portion) > 0 THEN TRUE ELSE FALSE END",
+        [orderID]
+      );
+    }
+
+    await conn.commit();
+    return result;
+  } catch (error) {
+    await conn.rollback();
+    throw error;
+  } finally {
+    conn.release();
+  }
 };
 
 module.exports = {
@@ -93,6 +120,6 @@ module.exports = {
   findOrdersBySession,
   updateOrderStatus,
   findPendingOrders,
-  findReadyOrdersByWaiter,
+  findOrdersByWaiter,
   updateOrderStatusForWaiter,
 };

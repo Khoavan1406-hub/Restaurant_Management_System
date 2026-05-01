@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { getMenu, createDish, updateDish, deleteDish } from "../../api/menuApi";
+import { getMenu, createDish, createDishesBulk, updateDish, deleteDish } from "../../api/menuApi";
 import toast from "react-hot-toast";
 import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiBookOpen, FiUpload, FiX } from "react-icons/fi";
 import Modal from "../../components/Modal";
@@ -10,10 +10,13 @@ const MenuManagement = () => {
   const [dishes, setDishes] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
   const [editingDish, setEditingDish] = useState(null);
   const [form, setForm] = useState({ name: "", description: "", note: "", category: "", price: "", daily_portion: "" });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [copyInput, setCopyInput] = useState("");
+  const [copySubmitting, setCopySubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   const fetchMenu = async () => {
@@ -106,12 +109,44 @@ const MenuManagement = () => {
     }
   };
 
+  const handleCopySubmit = async (e) => {
+    e.preventDefault();
+    setCopySubmitting(true);
+    try {
+      const parsed = JSON.parse(copyInput);
+      const items = Array.isArray(parsed) ? parsed : parsed?.items;
+      if (!Array.isArray(items) || items.length === 0) {
+        throw new Error("JSON must be an array or an object with an items array");
+      }
+
+      const { data } = await createDishesBulk({ items });
+      const createdCount = data?.createdCount ?? 0;
+      const updatedCount = data?.updatedCount ?? 0;
+      const zeroedCount = data?.zeroedCount ?? 0;
+      toast.success(`Imported ${createdCount} new, updated ${updatedCount}, zeroed ${zeroedCount}`);
+      setShowCopyModal(false);
+      setCopyInput("");
+      fetchMenu();
+    } catch (err) {
+      toast.error("Invalid JSON");
+    } finally {
+      setCopySubmitting(false);
+    }
+  };
+
   const filtered = dishes.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase()) ||
     d.category.toLowerCase().includes(search.toLowerCase())
   );
 
   const categories = [...new Set(dishes.map((d) => d.category))];
+  const groupedByCategory = filtered.reduce((acc, dish) => {
+    const category = dish.category || "Uncategorized";
+    if (!acc.has(category)) acc.set(category, []);
+    acc.get(category).push(dish);
+    return acc;
+  }, new Map());
+  const groupedCategories = Array.from(groupedByCategory.keys());
 
   const formatPrice = (price) =>
     new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(price);
@@ -127,7 +162,7 @@ const MenuManagement = () => {
     <div>
       <div className="page-header">
         <h1>Menu Management</h1>
-        <p>Add, edit, and manage dishes and daily portions</p>
+        <p>Add, edit, and manage dishes and daily portion</p>
       </div>
 
       <div className="stats-grid">
@@ -161,39 +196,47 @@ const MenuManagement = () => {
               style={{ width: "100%", padding: "10px 14px 10px 38px", borderRadius: 10, border: "1px solid var(--border-color)", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "0.9rem", outline: "none", fontFamily: "inherit" }}
             />
           </div>
+          <button className="btn btn-primary" onClick={() => setShowCopyModal(true)}>Copy Menu</button>
           <button className="btn btn-primary" onClick={openCreate}><FiPlus /> Add Dish</button>
         </div>
       </div>
 
       {filtered.length > 0 ? (
-        <div className="dish-grid">
-          {filtered.map((d) => (
-            <div key={d.dishID} className={`dish-card ${!d.is_available ? "sold-out" : ""}`}>
-              <div className="dish-card-img">
-                <img src={getDishImage(d)} alt={d.name} onError={(e) => { e.target.src = PLACEHOLDER_IMG; }} />
-                {!d.is_available && <div className="dish-sold-overlay">Sold Out</div>}
-              </div>
-              <div className="dish-card-body">
-                <div className="dish-card-header">
-                  <h3>{d.name}</h3>
-                  <span className="badge badge-info">{d.category}</span>
-                </div>
-                {d.description && <p className="dish-desc">{d.description}</p>}
-                {d.note && <p className="dish-desc">{d.note}</p>}
-                <div className="dish-card-footer">
-                  <div>
-                    <span className="dish-price">{formatPrice(d.price)}</span>
-                    <span className="dish-portion">{d.current_portion} left</span>
-                  </div>
-                  <div className="dish-actions">
-                    <button className="btn btn-secondary btn-sm" onClick={() => openEdit(d)}><FiEdit2 /></button>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(d.dishID, d.name)}><FiTrash2 /></button>
-                  </div>
-                </div>
-              </div>
+        groupedCategories.map((category) => (
+          <div key={category} className="category-section">
+            <div className="category-title">
+              <span>{category}</span>
             </div>
-          ))}
-        </div>
+            <div className="dish-grid">
+              {groupedByCategory.get(category).map((d) => (
+                <div key={d.dishID} className={`dish-card ${!d.is_available ? "sold-out" : ""}`}>
+                  <div className="dish-card-img">
+                    <img src={getDishImage(d)} alt={d.name} onError={(e) => { e.target.src = PLACEHOLDER_IMG; }} />
+                    {!d.is_available && <div className="dish-sold-overlay">Sold Out</div>}
+                  </div>
+                  <div className="dish-card-body">
+                    <div className="dish-card-header">
+                      <h3>{d.name}</h3>
+                      <span className="badge badge-info">{d.category}</span>
+                    </div>
+                    {d.description && <p className="dish-desc">{d.description}</p>}
+                    {d.note && <p className="dish-desc">Note: {d.note}</p>}
+                    <div className="dish-card-footer">
+                      <div>
+                        <span className="dish-price">{formatPrice(d.price)}</span>
+                        <span className="dish-portion">{d.current_portion} left</span>
+                      </div>
+                      <div className="dish-actions">
+                        <button className="btn btn-secondary btn-sm" onClick={() => openEdit(d)}><FiEdit2 /></button>
+                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(d.dishID, d.name)}><FiTrash2 /></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
       ) : (
         <div className="card">
           <div className="empty-state">
@@ -280,12 +323,36 @@ const MenuManagement = () => {
               </div>
             </div>
             <div className="input-group">
-              <label>Daily Portions *</label>
+              <label>Daily Portion *</label>
               <input type="number" min="0" required value={form.daily_portion} onChange={(e) => setForm({ ...form, daily_portion: e.target.value })} />
             </div>
             <div className="modal-actions">
               <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
               <button type="submit" className="btn btn-primary">{editingDish ? "Update" : "Add Dish"}</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {showCopyModal && (
+        <Modal onClose={() => setShowCopyModal(false)}>
+          <h2>Copy Menu</h2>
+          <form onSubmit={handleCopySubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div className="input-group">
+              <label>Paste JSON here *</label>
+              <textarea
+                required
+                rows={10}
+                value={copyInput}
+                onChange={(e) => setCopyInput(e.target.value)}
+                placeholder='[{"name":"Pho","category":"Main Course","price":45000,"daily_portion":20}, {"name":"Spring Rolls","category":"Appetizer","price":25000,"daily_portion":30}]'
+              />
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="btn btn-secondary" onClick={() => setShowCopyModal(false)}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={copySubmitting || !copyInput.trim()}>
+                {copySubmitting ? "Importing..." : "Import Menu"}
+              </button>
             </div>
           </form>
         </Modal>

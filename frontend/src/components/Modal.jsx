@@ -1,9 +1,10 @@
 import { createPortal } from "react-dom";
 
-const Modal = ({ children, onClose }) => {
+const Modal = ({ children, onClose, className = "" }) => {
+  const modalClassName = className ? `modal ${className}` : "modal";
   return createPortal(
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
+      <div className={modalClassName} onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>,

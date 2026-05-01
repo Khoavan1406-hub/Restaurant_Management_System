@@ -79,6 +79,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+  margin-top: auto;
 }
 
 .waiter-order-actions .btn {

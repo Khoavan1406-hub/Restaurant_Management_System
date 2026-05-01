@@ -108,13 +108,14 @@ CREATE TABLE IF NOT EXISTS `OrderItem` (
 
 -- 9. AuditLog Table
 CREATE TABLE IF NOT EXISTS `AuditLog` (
-    `logID`     INT          AUTO_INCREMENT PRIMARY KEY,
-    `userID`    INT          NULL,
-    `action`    TEXT         NOT NULL,
-    `timestamp` TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+    `logID`         INT          AUTO_INCREMENT PRIMARY KEY,
+    `userID`        INT          NOT NULL,
+    `action`        TEXT         NOT NULL,
+    `description`   TEXT         NULL,
+    `timestamp`     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT `fk_log_user`
         FOREIGN KEY (`userID`) REFERENCES `User`(`userID`)
-        ON DELETE SET NULL ON UPDATE CASCADE
+        ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =============================================

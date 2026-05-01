@@ -23,7 +23,7 @@ A full-stack restaurant management system with role-based access control, real-t
 - View all staff with role badges and status
 
 ### 👨‍🍳 Chef — Menu & Kitchen
-- **Menu Management**: Add/edit/delete dishes with image upload, daily portions, auto sold-out
+- **Menu Management**: Add/edit/delete dishes with image upload, daily portion, auto sold-out
 - **Kitchen Display**: Real-time order feed via WebSocket, update status (Pending → Cooking → Ready)
 
 ### 🧑‍🍳 Waiter — Tables & Orders

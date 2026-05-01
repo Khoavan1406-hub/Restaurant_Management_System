@@ -22,6 +22,7 @@ const KitchenDisplay = () => {
             table_number: row.table_number,
             timestamp: row.timestamp,
             status: row.status,
+            chefID: row.chefID || null,
             items: [],
           };
         }
@@ -48,7 +49,7 @@ const KitchenDisplay = () => {
     socket.emit("join-room", "kitchen");
 
     socket.on("new-order", () => {
-      toast("🔔 New order received!", { icon: "📋" });
+      toast("New order received!");
       fetchOrders();
     });
 
@@ -56,9 +57,14 @@ const KitchenDisplay = () => {
       fetchOrders();
     });
 
+    socket.on("order-items-updated", () => {
+      fetchOrders();
+    });
+
     return () => {
       socket.off("new-order");
       socket.off("order-status-update");
+      socket.off("order-items-updated");
     };
   }, [socketRef, fetchOrders]);
 
@@ -71,7 +77,7 @@ const KitchenDisplay = () => {
   };
 
   const notStarted = orders.filter((o) => o.status === "Not Started");
-  const cooking = orders.filter((o) => o.status === "Cooking");
+  const cooking = orders.filter((o) => o.status === "Cooking" && o.chefID === user?.userID);
 
   return (
     <div>
@@ -109,7 +115,7 @@ const KitchenDisplay = () => {
                   <div key={i} className="kitchen-item">
                     <span className="kitchen-qty">{item.quantity}x</span>
                     <span className="kitchen-name">{item.dish_name}</span>
-                    {item.special_note && <span className="kitchen-note">📝 {item.special_note}</span>}
+                    {item.special_note && <span className="kitchen-note">Note: {item.special_note}</span>}
                   </div>
                 ))}
               </div>
@@ -130,7 +136,7 @@ const KitchenDisplay = () => {
             <div key={order.orderID} className="kitchen-card cooking">
               <div className="kitchen-card-header">
                 <div>
-                  <span className="kitchen-order-id">#{order.orderID}</span>
+                  <span className="kitchen-order-id">Order #{order.orderID}</span>
                   <span className="badge badge-warning">Table {order.table_number}</span>
                 </div>
               </div>

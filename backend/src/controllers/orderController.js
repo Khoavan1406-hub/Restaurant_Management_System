@@ -72,10 +72,10 @@ const getPending = async (req, res, next) => {
   }
 };
 
-// GET /api/orders/waiter/ready
-const getWaiterReadyOrders = async (req, res, next) => {
+// GET /api/orders/waiter/all
+const getWaiterOrders = async (req, res, next) => {
   try {
-    const orders = await orderService.getReadyOrdersByWaiter(req.user.userID);
+    const orders = await orderService.getOrdersByWaiter(req.user.userID);
     res.json(orders);
   } catch (error) {
     next(error);
@@ -96,7 +96,7 @@ const updateWaiterOrderStatus = async (req, res, next) => {
       return res.status(400).json({ message: "Status must be Completed or Cancelled" });
     }
 
-    const result = await orderService.updateReadyOrderStatusByWaiter(req.user.userID, orderID, status);
+    const result = await orderService.updateOrderStatusByWaiter(req.user.userID, orderID, status);
     await auditLogModel.create(req.user.userID, "WAITER_UPDATE_ORDER_STATUS", `Order #${orderID} -> ${status}`);
 
     const io = req.app.get("io");
@@ -105,6 +105,33 @@ const updateWaiterOrderStatus = async (req, res, next) => {
     }
 
     res.json({ message: `Order #${orderID} updated`, ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PATCH /api/orders/:id/items
+const updateOrderItems = async (req, res, next) => {
+  try {
+    const orderID = parseInt(req.params.id);
+    const { items } = req.body;
+
+    if (!Number.isInteger(orderID) || orderID <= 0) {
+      return res.status(400).json({ message: "Valid order ID is required" });
+    }
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "items array is required" });
+    }
+
+    const result = await orderService.updatePendingOrderItems(req.user.userID, orderID, items);
+    await auditLogModel.create(req.user.userID, "UPDATE_ORDER_ITEMS", `Updated items for order #${orderID}`);
+
+    const io = req.app.get("io");
+    if (io) {
+      io.to("kitchen").emit("order-items-updated", { orderID });
+    }
+
+    res.json({ message: "Order items updated", ...result });
   } catch (error) {
     next(error);
   }
@@ -147,8 +174,9 @@ module.exports = {
   createOrder,
   getBySession,
   getPending,
-  getWaiterReadyOrders,
+  getWaiterOrders,
   updateWaiterOrderStatus,
+  updateOrderItems,
   closeSession,
   getActiveSessions,
 };

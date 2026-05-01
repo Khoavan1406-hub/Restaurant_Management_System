@@ -7,6 +7,11 @@ export const createDish = (formData) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
+export const createDishesBulk = (payload) =>
+  api.post("/menu/bulk", payload, {
+    headers: { "Content-Type": "application/json" },
+  });
+
 export const updateDish = (dishID, formData) =>
   api.put(`/menu/${dishID}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },

@@ -4,11 +4,26 @@ import toast from "react-hot-toast";
 import { FiPlus, FiTrash2, FiSearch } from "react-icons/fi";
 import Modal from "../../components/Modal";
 
+const formatDateTime = (timestamp) => {
+  return new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(timestamp));
+};
+
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [form, setForm] = useState({ id_number: "", username: "", password: "", role: "Waiter" });
+  const [form, setForm] = useState({
+    id_number: "",
+    username: "",
+    password: "",
+    phone_number: "",
+    contact_email: "",
+    role: "",
+  });
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -27,10 +42,10 @@ const UserManagement = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
-      await createUser({ ...form, phone_number: "", contact_email: "" });
+      await createUser(form);
       toast.success("Account created successfully!");
       setShowModal(false);
-      setForm({ id_number: "", username: "", password: "", role: "Waiter" });
+      setForm({ id_number: "", username: "", password: "", phone_number: "", contact_email: "", role: "" });
       fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to create account");
@@ -52,6 +67,11 @@ const UserManagement = () => {
     u.username.toLowerCase().includes(search.toLowerCase()) ||
     u.role.toLowerCase().includes(search.toLowerCase())
   );
+  const sorted = [...filtered].sort((a, b) => {
+    const activeDelta = Number(b.is_active) - Number(a.is_active);
+    if (activeDelta !== 0) return activeDelta;
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
 
   return (
     <div>
@@ -90,12 +110,12 @@ const UserManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((u) => (
+                {sorted.map((u) => (
                   <tr key={u.userID}>
                     <td style={{ color: "var(--text-primary)", fontWeight: 600 }}>{u.username}</td>
-                    <td><span className={`badge ${u.role === "Chef" ? "badge-info" : u.role === "Admin" ? "badge-success" : "badge-warning"}`}>{u.role}</span></td>
+                    <td><span className={`badge ${u.role === "Chef" ? "badge-info" : u.role === "Admin" ? "badge-pending" : "badge-warning"}`}>{u.role}</span></td>
                     <td><span className={`badge ${u.is_active ? "badge-success" : "badge-danger"}`}>{u.is_active ? "Active" : "Inactive"}</span></td>
-                    <td>{new Date(u.created_at).toLocaleDateString("en-US")}</td>
+                    <td>{formatDateTime(u.created_at)}</td>
                     <td>
                       {u.role !== "Admin" && (
                         <button className="btn btn-danger btn-sm" onClick={() => handleDelete(u.userID, u.username)}><FiTrash2 /></button>
@@ -126,6 +146,23 @@ const UserManagement = () => {
               <label>Password *</label>
               <input type="password" required value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
             </div>
+            <div className="input-group">
+              <label>Phone Number *</label>
+              <input
+                required
+                value={form.phone_number}
+                onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
+              />
+            </div>
+            <div className="input-group">
+              <label>Contact Email *</label>
+              <input
+                required
+                type="email"
+                value={form.contact_email}
+                onChange={(e) => setForm({ ...form, contact_email: e.target.value })}
+              />
+            </div>
             <div className="grid-2">
               <div className="input-group">
                 <label>ID Number *</label>
@@ -133,7 +170,8 @@ const UserManagement = () => {
               </div>
               <div className="input-group">
                 <label>Role *</label>
-                <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                <select required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
+                  <option value="" disabled>Select role</option>
                   <option value="Waiter">Waiter</option>
                   <option value="Chef">Chef</option>
                 </select>

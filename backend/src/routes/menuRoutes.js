@@ -9,6 +9,7 @@ router.get("/", verifyToken, menuController.getAll);
 
 // Create/Update/Delete — Chef or Admin only
 router.post("/", verifyToken, authorizeRoles("Chef", "Admin"), upload.single("image"), menuController.create);
+router.post("/bulk", verifyToken, authorizeRoles("Chef", "Admin"), menuController.bulkCreate);
 router.put("/:id", verifyToken, authorizeRoles("Chef", "Admin"), upload.single("image"), menuController.update);
 router.delete("/:id", verifyToken, authorizeRoles("Chef", "Admin"), menuController.remove);
 

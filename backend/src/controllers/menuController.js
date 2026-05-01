@@ -31,6 +31,22 @@ const create = async (req, res, next) => {
   }
 };
 
+// POST /api/menu/bulk (application/json)
+const bulkCreate = async (req, res, next) => {
+  try {
+    const items = Array.isArray(req.body) ? req.body : req.body.items;
+    const result = await menuService.createDishesBulk(req.user.userID, items);
+    await auditLogModel.create(
+      req.user.userID,
+      "BULK_CREATE_DISH",
+      `Menu sync: +${result.createdCount}, ~${result.updatedCount}, 0:${result.zeroedCount}`
+    );
+    res.status(201).json({ message: "Menu synced successfully", ...result });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // PUT /api/menu/:id (multipart/form-data with optional image file)
 const update = async (req, res, next) => {
   try {
@@ -62,4 +78,4 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, create, update, remove };
+module.exports = { getAll, create, bulkCreate, update, remove };

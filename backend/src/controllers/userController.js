@@ -16,8 +16,10 @@ const create = async (req, res, next) => {
   try {
     const { id_number, username, password, phone_number, contact_email, role } = req.body;
 
-    if (!id_number || !username || !password || !role) {
-      return res.status(400).json({ message: "Required: id_number, username, password, role" });
+    if (!id_number || !username || !password || !phone_number || !contact_email || !role) {
+      return res.status(400).json({
+        message: "Required: id_number, username, password, phone_number, contact_email, role",
+      });
     }
     if (!["Chef", "Waiter"].includes(role)) {
       return res.status(400).json({ message: "Role must be Chef or Waiter" });
