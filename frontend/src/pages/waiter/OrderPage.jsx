@@ -414,7 +414,7 @@ const OrderPage = () => {
             <span className="bill-amount">{formatPrice(totalBill)}</span>
           </div>
           <button className="btn btn-success" style={{ width: "100%" }} onClick={handleClose}>
-            <FiCreditCard /> Checkout & Close Table
+            <FiCreditCard /> Checkout & Close Session
           </button>
         </div>
       </div>
