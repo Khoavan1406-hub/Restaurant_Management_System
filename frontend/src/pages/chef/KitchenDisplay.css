@@ -60,7 +60,6 @@
 .kitchen-item {
   display: flex;
   align-items: center;
-  gap: 10px;
   padding: 8px 12px;
   background: var(--bg-hover);
   border-radius: 8px;

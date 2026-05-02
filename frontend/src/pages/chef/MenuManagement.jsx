@@ -345,7 +345,7 @@ const MenuManagement = () => {
                 rows={10}
                 value={copyInput}
                 onChange={(e) => setCopyInput(e.target.value)}
-                placeholder={`e.g.
+                placeholder={`e.g.,
 [
   {
     "name": "Pho",
