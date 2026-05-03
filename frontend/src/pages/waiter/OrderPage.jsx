@@ -89,9 +89,6 @@ const OrderPage = () => {
   const totalCartPrice = cart.reduce((sum, c) => sum + c.price * c.quantity, 0);
   const totalBill = existingOrders
     .filter((o) => o.status !== "Cancelled")
-    .reduce((sum, o) => sum + o.dish_price * o.quantity, 0) + totalCartPrice;
-  const finalBillTotal = existingOrders
-    .filter((o) => o.status !== "Cancelled")
     .reduce((sum, o) => sum + o.dish_price * o.quantity, 0);
   const billItems = Array.from(
     existingOrders
@@ -417,7 +414,7 @@ const OrderPage = () => {
             <span className="bill-amount">{formatPrice(totalBill)}</span>
           </div>
           <button className="btn btn-success" style={{ width: "100%" }} onClick={handleClose}>
-            <FiCreditCard /> Checkout & Close Table
+            <FiCreditCard /> Checkout & Close Session
           </button>
         </div>
       </div>
@@ -457,7 +454,7 @@ const OrderPage = () => {
                 <tfoot>
                   <tr className="bill-total-row">
                     <td colSpan={3}>Total Bill</td>
-                    <td colSpan={1}>{formatPrice(finalBillTotal)}</td>
+                    <td colSpan={1}>{formatPrice(totalBill)}</td>
                   </tr>
                 </tfoot>
               </table>
