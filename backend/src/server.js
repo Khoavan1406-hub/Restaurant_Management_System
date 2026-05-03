@@ -13,8 +13,9 @@ const setupKitchenSocket = require("./sockets/kitchenSocket");
 
 const app = express();
 const server = http.createServer(app);
+const ALLOWED_ORIGINS = ["http://localhost:5173", "http://localhost:5174"];
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173" },
+  cors: { origin: ALLOWED_ORIGINS },
 });
 
 const PORT = process.env.PORT || 5000;
@@ -23,7 +24,7 @@ app.set("io", io);
 
 // ===== Middlewares =====
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(morgan("dev"));
 app.use(express.json());
 
