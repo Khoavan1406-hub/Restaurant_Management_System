@@ -1,5 +1,6 @@
 const userService = require("../services/userService");
 const auditLogModel = require("../models/auditLogModel");
+const { validateCreateUser } = require("../validators/userValidator");
 
 // GET /api/users
 const getAll = async (req, res, next) => {
@@ -16,13 +17,17 @@ const create = async (req, res, next) => {
   try {
     const { id_number, username, password, phone_number, contact_email, role } = req.body;
 
-    if (!id_number || !username || !password || !phone_number || !contact_email || !role) {
-      return res.status(400).json({
-        message: "Required: id_number, username, password, phone_number, contact_email, role",
-      });
-    }
-    if (!["Chef", "Waiter"].includes(role)) {
-      return res.status(400).json({ message: "Role must be Chef or Waiter" });
+    const validationError = validateCreateUser({
+      id_number,
+      username,
+      password,
+      phone_number,
+      contact_email,
+      role,
+    });
+
+    if (validationError) {
+      return res.status(validationError.status).json({ message: validationError.message });
     }
 
     const newUser = await userService.createUser({ id_number, username, password, phone_number, contact_email, role });

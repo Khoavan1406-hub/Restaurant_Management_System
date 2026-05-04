@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { getAllUsers, createUser, deleteUser } from "../../api/userApi";
 import toast from "react-hot-toast";
 import { FiPlus, FiTrash2, FiSearch } from "react-icons/fi";
@@ -25,19 +25,37 @@ const UserManagement = () => {
     role: "",
   });
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = async () => {
     try {
       const { data } = await getAllUsers();
       setUsers(data);
     } catch (err) {
       toast.error(`Failed to load staff list: ${err.message || "Unknown error"}`);
     }
-  }, []); // Empty array means this function never needs to be recreated
+  };
 
-  // 2. Safely call it inside useEffect
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    let cancelled = false;
+
+    const loadUsers = async () => {
+      try {
+        const { data } = await getAllUsers();
+        if (!cancelled) {
+          setUsers(data);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          toast.error(`Failed to load staff list: ${err.message || "Unknown error"}`);
+        }
+      }
+    };
+
+    loadUsers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -150,6 +168,11 @@ const UserManagement = () => {
               <label>Phone Number *</label>
               <input
                 required
+                type="tel"
+                inputMode="numeric"
+                maxLength={11}
+                pattern="^[0-9]{10,11}$"
+                title="Phone number must be 10 to 11 digits"
                 value={form.phone_number}
                 onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
               />
@@ -166,7 +189,15 @@ const UserManagement = () => {
             <div className="grid-2">
               <div className="input-group">
                 <label>ID Number *</label>
-                <input required value={form.id_number} onChange={(e) => setForm({ ...form, id_number: e.target.value })} />
+                <input
+                  required
+                  inputMode="numeric"
+                  maxLength={12}
+                  pattern="^[0-9]{12}$"
+                  title="ID number must be exactly 12 digits"
+                  value={form.id_number}
+                  onChange={(e) => setForm({ ...form, id_number: e.target.value })}
+                />
               </div>
               <div className="input-group">
                 <label>Role *</label>
