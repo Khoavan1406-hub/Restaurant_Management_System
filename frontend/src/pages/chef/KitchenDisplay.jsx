@@ -145,7 +145,7 @@ const KitchenDisplay = () => {
                   <div key={i} className="kitchen-item">
                     <span className="kitchen-qty">{item.quantity}x</span>
                     <span className="kitchen-name">{item.dish_name}</span>
-                    {item.special_note && <span className="kitchen-note">📝 {item.special_note}</span>}
+                    {item.special_note && <span className="kitchen-note">Note: {item.special_note}</span>}
                   </div>
                 ))}
               </div>
